@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "15933441521",
+    "project_id": "orah-25553",
+    "storage_bucket": "orah-25553.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15933441521:android:d194977013c9b7abb73050",
+        "android_client_info": {
+          "package_name": "com.rholab.orah"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATbnOg3SJOKQKTMXVNMh4zTaIt6wa_m0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

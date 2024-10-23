@@ -1,0 +1,19 @@
+IP : 82.197.89.32
+
+1: Where the server is hosted? 
+Answer: United States, Arizona Region
+
+2: Is the message originated from Pakistan or outside Pakistan?
+Answer: Yes, they are originated from Pakistan
+
+3: Service Flow
+Answer: Message => Condition => Ufone API
+
+4: Hosted server details (IPs & location etc.)
+Answer: (IP: 82.197.89.32, Hostinger International, United States, Arizona Region)
+
+5: Message content
+Answer: Message Content: "Dear Customer Here, is your OTP 12345"
+
+6: Service flow: 
+Answer: Service flow diagram is attached in this email
