@@ -316,4 +316,17 @@ class Api {
     print("Banners ${data}");
     return data;
   }
+
+  static Future offer1111() async {
+    var apiUrl = Global.offer1111;
+    final response = await http.post(Uri.parse(apiUrl), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }, body: {
+      "secret_key": secret,
+    });
+    final data = jsonDecode(response.body);
+    print("offer1111 ${data}");
+    return data;
+  }
 }

@@ -22,7 +22,8 @@ class Global {
   static var customerPhone = "${baseurl}customers/customerContact";
   static var UpdateProfile = "${baseurl}customers/updateProfile";
   static var smmAuthApi = "${baseurl}Auth/smsAPI";
-  static var getBanners = "${baseurl}Banner/get_banners";
+  static var offer1111 = "${baseurl}/products/list_sale";
+  static var getBanners = "https://www.orah.pk/api/sliderlistmob";
 
   // static var login = '${baseurl}auth/login';
   static var imageUrl = "https://orah.distrho.com/uploads/products/";

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:orah_pharmacy/Database%20Orah/database_orah.dart';
 import 'package:orah_pharmacy/const/color.dart';
@@ -41,17 +40,23 @@ class _HomeState extends State<Home> {
   // ignore: unused_field
   int _quantity = 1;
   List product = [];
+  List offerproduct = [];
+  String banner1111 = "";
+  int active = 0;
+
   List filteredMedicines = [];
   List filteredPersonalCare = [];
   List filteredVitamins = [];
   List filtereHealthCare = [];
   List filteredBabyCare = [];
+  List filteredoffer1111 = [];
   List cart = [];
   late int quantityvalue;
   late int packsize;
   late int totalquantity;
   late int medicinquantity;
   List filter = [];
+  List filteredperoduct = [];
   bool isLoading = true;
   bool isLoading1 = true;
   late Timer _timer;
@@ -60,7 +65,12 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    print("nanknsdkk ${banner1111}");
+
     Api.getBanners();
+    print("ubaid khan offer 1111 ${fetchoffer1111().toString()}");
+
+    fetchoffer1111();
     _startTimer();
     fetchproduct().then(
       (value) {
@@ -116,12 +126,27 @@ class _HomeState extends State<Home> {
               }
             });
             //filter product..................................................
+//...............................................................................
+            // filteredPersonalCare = product
+            //     .where((data) =>
+            //         data['category'] == 'PERSONAL CARE' &&
+            //         data['purchase_quantity'] != '0.0000')
+            //     .toList();
 
-            filteredPersonalCare = product
-                .where((data) =>
-                    data['category'] == 'PERSONAL CARE' &&
-                    data['purchase_quantity'] != '0.0000')
-                .toList();
+            //............................................................................
+
+            filteredPersonalCare = product.where((item) {
+              try {
+                double apiValue = double.parse(item['purchase_quantity']) /
+                    double.parse(item['pack_size']);
+                int quantityValue = apiValue.isFinite ? apiValue.toInt() : 0;
+                item['category'] == 'PERSONAL CARE' &&
+                    item['purchase_quantity'] != '0.0000';
+                return quantityValue > 0;
+              } catch (e) {
+                return false;
+              }
+            }).toList();
 
             filteredPersonalCare.sort((a, b) {
               if (a['product_image'] == 'no_image.png' &&
@@ -235,6 +260,41 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future fetchoffer1111() async {
+    var res = await Api.offer1111();
+
+    if (res['code_status'] == true) {
+      setState(() {
+        offerproduct = res['products'].where((p) {
+          return (p['product_mrp_pack'] != null &&
+              p['product_mrp'] != null &&
+              p['purchase_quantity'] != '0.0000');
+        }).toList();
+
+        banner1111 = res['banner'] ?? "";
+        active = res['active'] ?? "";
+
+        filter = product;
+        isLoading = false;
+      });
+
+      print('1111 banner $banner1111');
+      print('1111 active $active');
+    }
+    filteredperoduct = offerproduct.where((item) {
+      try {
+        double apiValue = double.parse(item['purchase_quantity']) /
+            double.parse(item['pack_size']);
+        int quantityValue = apiValue.isFinite ? apiValue.toInt() : 0;
+        return quantityValue > 0;
+      } catch (e) {
+        return false;
+      }
+    }).toList();
+
+    print('1111 Products $filteredperoduct');
+  }
+
   Future fetchCategory() async {
     var res = await Api.getCategories();
     if (res['code_status'] == true) {
@@ -274,6 +334,7 @@ class _HomeState extends State<Home> {
       {'medicine': filteredPersonalCare, 'title': 'Personal Care'},
     ];
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         return await _showExitConfirmationDialog(context);
@@ -376,7 +437,7 @@ class _HomeState extends State<Home> {
                                                   ),
                                                 ),
                                               );
-                                            } else if (currentIndex == 2) {
+                                            } else if (currentIndex == 3) {
                                               print('Medicine');
                                               Navigator.of(context,
                                                       rootNavigator: true)
@@ -389,7 +450,7 @@ class _HomeState extends State<Home> {
                                                   ),
                                                 ),
                                               );
-                                            } else if (currentIndex == 3) {
+                                            } else if (currentIndex == 2) {
                                               print('Personal Care');
                                               Navigator.of(context,
                                                       rootNavigator: true)
@@ -414,6 +475,21 @@ class _HomeState extends State<Home> {
                                                     medicine: filtereHealthCare,
                                                     title:
                                                         'HEALTHCARE EQUIPMENTS',
+                                                  ),
+                                                ),
+                                              );
+                                              print(filtereHealthCare);
+                                            } else if (currentIndex == 5) {
+                                              print('Health Care');
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Categories(
+                                                    active: active,
+                                                    category: "11.11 Sales",
+                                                    offer11: filteredperoduct,
                                                   ),
                                                 ),
                                               );
@@ -491,7 +567,65 @@ class _HomeState extends State<Home> {
                                             ),
                                           ),
                                         ),
-                                  SizedBox(height: mq.height * 0.03),
+
+                                  SizedBox(height: mq.height * 0.02),
+                                  active == 1
+                                      ? InkWell(
+                                          onTap: () {
+                                            print(
+                                                " jdjdsddsdjdj ${offerproduct[0]['category']}");
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Categories(
+                                                  active: active,
+                                                  category: "11.11 Sales",
+                                                  offer11: filteredperoduct,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                              margin: EdgeInsets.only(left: 20),
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.9, // Set your desired width
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: banner1111.isNotEmpty
+                                                  ? Image.network(
+                                                      "${banner1111}",
+                                                      height: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .height *
+                                                          0.1, // Maintain the height
+                                                      fit: BoxFit
+                                                          .cover, // Ensure the image covers the container
+                                                    )
+                                                  : Shimmer.fromColors(
+                                                      baseColor:
+                                                          Colors.grey[300]!,
+                                                      highlightColor:
+                                                          Colors.grey[100]!,
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .all(10.0),
+                                                        width: double.infinity,
+                                                        height: 180,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )),
+                                        )
+                                      : SizedBox(),
+
+                                  SizedBox(height: mq.height * 0.01),
 
                                   //category
                                   SizedBox(
@@ -518,6 +652,7 @@ class _HomeState extends State<Home> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     Categories(
+                                                  active: active,
                                                   category: categories[index]
                                                       ['name'],
                                                   category_id: categories[index]
@@ -807,6 +942,8 @@ class _HomeState extends State<Home> {
 
                                         double result =
                                             purchasequantity / packsize;
+                                        print(" hamza321 ${result}");
+
                                         int totalquantity = result.toInt();
 
                                         double discountedPrice = integerValue -

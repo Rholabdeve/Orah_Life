@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:orah_pharmacy/Database%20Orah/database_orah.dart';
 import 'package:orah_pharmacy/const/color.dart';
@@ -12,13 +15,17 @@ import 'package:orah_pharmacy/widget/shimmer/explore_more_shimmer.dart';
 import 'package:provider/provider.dart';
 
 class Categories extends StatefulWidget {
-  final String category;
+  final String? category;
   final String? category_id;
+  final dynamic offer11;
+  final dynamic active;
 
   const Categories({
-    required this.category,
+    this.category,
     super.key,
     this.category_id,
+    this.offer11,
+    this.active,
   });
 
   @override
@@ -29,13 +36,25 @@ class _CategoriesState extends State<Categories> {
   String selectedColor = '';
   List product = [];
   List categoryData = [];
+  List filteredperoduct = [];
+
   List<Map<String, dynamic>> result = [];
+  late ConfettiController _confettiController;
 
   @override
   void initState() {
+    print("jdndjdkd ${widget.active}");
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 1));
     print("Test Category id: ${widget.category_id}");
+    print("Test Category name: ${widget.category}");
+    print("Test list name: ${filteredperoduct}");
     super.initState();
-    fetchProduct();
+    widget.category == "11.11 Sales" ? widget.offer11 : fetchProduct();
+    print("ubaid hai bhai${widget.offer11}");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showConfetti();
+    });
   }
 
   Future<void> fetchProduct() async {
@@ -115,6 +134,17 @@ class _CategoriesState extends State<Categories> {
     });
   }
 
+  void _showConfetti() {
+    _confettiController.play();
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the ConfettiController
+    _confettiController.dispose();
+    super.dispose();
+  }
+
   DatabaseOrah? dbHelper = DatabaseOrah();
 
   @override
@@ -147,7 +177,7 @@ class _CategoriesState extends State<Categories> {
                   const SizedBox(width: 15),
                   Expanded(
                     child: Text(
-                      widget.category,
+                      widget.category ?? "",
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: Colors.white,
@@ -184,9 +214,8 @@ class _CategoriesState extends State<Categories> {
             ),
 
             // Body
-            categoryData.isEmpty
-                ? ExploreMoreShimmer()
-                : Expanded(
+            widget.category == "11.11 Sales" && widget.offer11.isNotEmpty
+                ? Expanded(
                     child: Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -198,52 +227,12 @@ class _CategoriesState extends State<Categories> {
                       child: Column(
                         children: [
                           // Filter chip
+                          ConfettiWidget(
+                            confettiController: _confettiController,
+                            blastDirection: -pi / 2,
+                            numberOfParticles: 80,
+                          ),
                           SizedBox(height: mq.height * 0.01),
-                          if (result.isNotEmpty)
-                            SizedBox(
-                              height: mq.height * 0.08,
-                              child: ListView.separated(
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: mq.width * 0.04,
-                                ),
-                                separatorBuilder: (context, index) => SizedBox(
-                                  width: mq.width * 0.02,
-                                ),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: result.length,
-                                itemBuilder: (context, index) {
-                                  final color = result[index]['subcategory'];
-                                  return FilterChip(
-                                    checkmarkColor: Colors.white,
-                                    backgroundColor: selectedColor == color
-                                        ? MyColor.darkblue
-                                        : Colors.white,
-                                    selected: selectedColor == color,
-                                    selectedColor: MyColor.darkblue,
-                                    label: Text(
-                                      '${result[index]['subcategory'] ?? ''}',
-                                      style: TextStyle(
-                                        color: selectedColor == color
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    onSelected: (bool onSelected) {
-                                      setState(() {
-                                        selectedColor =
-                                            onSelected ? color ?? '' : '';
-                                        if (onSelected) {
-                                          fetchSubCategory(color);
-                                        } else {
-                                          _updateCategoryData();
-                                        }
-                                      });
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
 
                           // Data
                           Expanded(
@@ -261,9 +250,10 @@ class _CategoriesState extends State<Categories> {
                                 crossAxisSpacing: mq.height * 0.02,
                                 childAspectRatio: mq.aspectRatio / 0.79,
                               ),
-                              itemCount: categoryData.length,
+                              itemCount: widget.offer11.length,
                               itemBuilder: (context, index) {
-                                final item = categoryData[index];
+                                final item = widget.offer11[index];
+                                print(" item hai ${item}");
                                 double apiValue = 0;
                                 int integerValue = 0;
 
@@ -296,11 +286,14 @@ class _CategoriesState extends State<Categories> {
                                 double packSize =
                                     double.tryParse(item['pack_size']) ??
                                         1; // Avoid division by zero
+                                print("ak pack  ${quantityValue / packSize}");
+
                                 if (packSize == 0)
                                   packSize = 1; // Fallback to 1
 
                                 double api2Value =
                                     double.tryParse(item['Discount']) ?? 0;
+
                                 int discount = api2Value.toInt();
 
                                 double discountedPrice = integerValue -
@@ -312,73 +305,275 @@ class _CategoriesState extends State<Categories> {
                                     (quantityValue / packSize).isFinite
                                         ? quantityValue / packSize
                                         : 0;
+
                                 int totalQuantity = result.toInt();
 
-                                return totalQuantity > 0
-                                    ? CustomCard(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProductDetails(data: item),
-                                            ),
-                                          );
-                                        },
-                                        image: item['product_image'],
-                                        name: item['product_name'],
-                                        price: "$afterDiscountPrice",
-                                        product_mrps: "${integerValue}",
-                                        discount: discount,
-                                        child: CustomButton(
-                                          onTap: totalQuantity == 0
-                                              ? () {
-                                                  FlushBar.flushBarMessage(
-                                                    message: 'Out of Stock',
-                                                    context: context,
-                                                  );
-                                                }
-                                              : () {
-                                                  dbHelper!
-                                                      .insertData(
-                                                          item['product_id'])
-                                                      .then((value) {
-                                                    cartProvider.addToCart(
-                                                        item, totalQuantity);
-                                                    dbHelper!.readData();
-                                                    FlushBar
-                                                        .flushbarmessagegreen(
-                                                      message: 'Item Added',
-                                                      context: context,
-                                                    );
-                                                  }).onError(
-                                                          (error, stackTrace) {
-                                                    FlushBar.flushBarMessage(
-                                                      message:
-                                                          'Item already added',
-                                                      context: context,
-                                                    );
-                                                  });
-                                                },
-                                          buttonText:
-                                              "${totalQuantity == 0 ? 'Out of Stock' : 'Add to Cart'}",
-                                          sizeWidth: double.infinity,
-                                          sizeHeight: 40,
-                                          boderRadius: 30,
-                                          buttontextsize: 12,
-                                          buttonColor: totalQuantity == 0
-                                              ? Colors.red
-                                              : MyColor.darkblue,
-                                        ),
-                                      )
-                                    : SizedBox.shrink();
+                                return CustomCard(
+                                  active: widget.active,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetails(
+                                            active: widget.active, data: item),
+                                      ),
+                                    );
+                                  },
+                                  image: item['product_image'],
+                                  name: item['product_name'],
+                                  price: "$afterDiscountPrice",
+                                  product_mrps: "${integerValue}",
+                                  discount: discount,
+                                  child: CustomButton(
+                                    onTap: totalQuantity == 0
+                                        ? () {
+                                            FlushBar.flushBarMessage(
+                                              message: 'Out of Stock',
+                                              context: context,
+                                            );
+                                          }
+                                        : () {
+                                            dbHelper!
+                                                .insertData(item['product_id'])
+                                                .then((value) {
+                                              cartProvider.addToCart(
+                                                  item, totalQuantity);
+                                              dbHelper!.readData();
+                                              FlushBar.flushbarmessagegreen(
+                                                message: 'Item Added',
+                                                context: context,
+                                              );
+                                            }).onError((error, stackTrace) {
+                                              FlushBar.flushBarMessage(
+                                                message: 'Item already added',
+                                                context: context,
+                                              );
+                                            });
+                                          },
+                                    buttonText:
+                                        "${totalQuantity == 0 ? 'Out of Stock' : 'Add to Cart'}",
+                                    sizeWidth: double.infinity,
+                                    sizeHeight: 40,
+                                    boderRadius: 30,
+                                    buttontextsize: 12,
+                                    buttonColor: totalQuantity == 0
+                                        ? Colors.red
+                                        : MyColor.darkblue,
+                                  ),
+                                );
                               },
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
+                  )
+                : categoryData.isEmpty
+                    ? ExploreMoreShimmer()
+                    : Expanded(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(25),
+                              topRight: Radius.circular(25),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              // Filter chip
+                              SizedBox(height: mq.height * 0.01),
+                              if (result.isNotEmpty)
+                                SizedBox(
+                                  height: mq.height * 0.08,
+                                  child: ListView.separated(
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: mq.width * 0.04,
+                                    ),
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(
+                                      width: mq.width * 0.02,
+                                    ),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: result.length,
+                                    itemBuilder: (context, index) {
+                                      final color =
+                                          result[index]['subcategory'];
+                                      return FilterChip(
+                                        checkmarkColor: Colors.white,
+                                        backgroundColor: selectedColor == color
+                                            ? MyColor.darkblue
+                                            : Colors.white,
+                                        selected: selectedColor == color,
+                                        selectedColor: MyColor.darkblue,
+                                        label: Text(
+                                          '${result[index]['subcategory'] ?? ''}',
+                                          style: TextStyle(
+                                            color: selectedColor == color
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        onSelected: (bool onSelected) {
+                                          setState(() {
+                                            selectedColor =
+                                                onSelected ? color ?? '' : '';
+                                            if (onSelected) {
+                                              fetchSubCategory(color);
+                                            } else {
+                                              _updateCategoryData();
+                                            }
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                              // Data
+                              Expanded(
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: mq.height * 0.02,
+                                    horizontal: mq.width * 0.04,
+                                  ),
+                                  physics: const BouncingScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: mq.width * 0.03,
+                                    crossAxisSpacing: mq.height * 0.02,
+                                    childAspectRatio: mq.aspectRatio / 0.79,
+                                  ),
+                                  itemCount: categoryData.length,
+                                  itemBuilder: (context, index) {
+                                    final item = categoryData[index];
+                                    double apiValue = 0;
+                                    int integerValue = 0;
+
+                                    if (item['product_mrp_pack'] != null) {
+                                      apiValue = double.tryParse(
+                                              item['product_mrp_pack']) ??
+                                          0;
+                                      integerValue = apiValue.toInt();
+                                    } else {
+                                      if (item['product_mrp'] != null &&
+                                          item['pack_size'] != null) {
+                                        double productMRP = double.tryParse(
+                                                item['product_mrp']) ??
+                                            0;
+                                        int packSize =
+                                            int.tryParse(item['pack_size']) ??
+                                                1; // Avoid division by zero
+                                        integerValue =
+                                            (productMRP * packSize).toInt();
+                                      } else {
+                                        integerValue = 0;
+                                      }
+                                    }
+
+                                    double api1Value = double.tryParse(
+                                            item['purchase_quantity']) ??
+                                        0;
+                                    int quantityValue = api1Value.toInt();
+
+                                    double packSize =
+                                        double.tryParse(item['pack_size']) ??
+                                            1; // Avoid division by zero
+                                    if (packSize == 0)
+                                      packSize = 1; // Fallback to 1
+
+                                    double api2Value =
+                                        double.tryParse(item['Discount']) ?? 0;
+                                    int discount = api2Value.toInt();
+
+                                    double discountedPrice = integerValue -
+                                        (integerValue * discount / 100);
+                                    int afterDiscountPrice =
+                                        discountedPrice.round();
+
+                                    double result =
+                                        (quantityValue / packSize).isFinite
+                                            ? quantityValue / packSize
+                                            : 0;
+                                    int totalQuantity = result.toInt();
+                                    double filterproduct =
+                                        quantityValue / packSize;
+                                    int offerfilterproduct =
+                                        filterproduct.toInt();
+                                    print(
+                                        "agha123 sardeoabandi ${filterproduct}");
+
+                                    return offerfilterproduct > 0
+                                        ? CustomCard(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProductDetails(
+                                                          data: item),
+                                                ),
+                                              );
+                                            },
+                                            image: item['product_image'],
+                                            name: item['product_name'],
+                                            price: "$afterDiscountPrice",
+                                            product_mrps: "${integerValue}",
+                                            discount: discount,
+                                            child: CustomButton(
+                                              onTap: totalQuantity == 0
+                                                  ? () {
+                                                      FlushBar.flushBarMessage(
+                                                        message: 'Out of Stock',
+                                                        context: context,
+                                                      );
+                                                    }
+                                                  : () {
+                                                      dbHelper!
+                                                          .insertData(item[
+                                                              'product_id'])
+                                                          .then((value) {
+                                                        cartProvider.addToCart(
+                                                            item,
+                                                            totalQuantity);
+                                                        dbHelper!.readData();
+                                                        FlushBar
+                                                            .flushbarmessagegreen(
+                                                          message: 'Item Added',
+                                                          context: context,
+                                                        );
+                                                      }).onError((error,
+                                                              stackTrace) {
+                                                        FlushBar
+                                                            .flushBarMessage(
+                                                          message:
+                                                              'Item already added',
+                                                          context: context,
+                                                        );
+                                                      });
+                                                    },
+                                              buttonText:
+                                                  "${totalQuantity == 0 ? 'Out of Stock' : 'Add to Cart'}",
+                                              sizeWidth: double.infinity,
+                                              sizeHeight: 40,
+                                              boderRadius: 30,
+                                              buttontextsize: 12,
+                                              buttonColor: totalQuantity == 0
+                                                  ? Colors.red
+                                                  : MyColor.darkblue,
+                                            ),
+                                          )
+                                        : SizedBox.shrink();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
           ],
         ),
       ),

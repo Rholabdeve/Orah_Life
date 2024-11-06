@@ -37,12 +37,12 @@ class CustomContainer extends StatelessWidget {
       margin: margin,
       clipBehavior: clipBehavior ?? Clip.none,
       decoration: BoxDecoration(
-        color: color ?? Colors.grey.shade100,
+        color: color ?? Colors.transparent,
         borderRadius: BorderRadius.circular(radius ?? 10),
         border: border ?? const Border(),
         boxShadow: [
           BoxShadow(
-            color: shadowColor ?? Colors.white,
+            color: shadowColor ?? Colors.transparent,
             blurRadius: shadowBlurRadius ?? 0,
             offset: offset,
           ),

@@ -1,7 +1,5 @@
 // ignore_for_file: unused_local_variable
 
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:orah_pharmacy/Database%20Orah/database_orah.dart';
@@ -17,7 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lottie/lottie.dart';
 
 class ShoppingCart extends StatefulWidget {
-  const ShoppingCart({super.key});
+  final dynamic active;
+  const ShoppingCart({super.key, this.active});
   @override
   _ShoppingCartState createState() => _ShoppingCartState();
 }
@@ -204,7 +203,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                 children: [
                                   //product iamge
                                   Stack(
-                                    alignment: Alignment.topRight,
+                                    alignment: Alignment.topLeft,
                                     children: [
                                       CustomContainer(
                                         sizeHeight: 140,
@@ -220,19 +219,34 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: discount == 0
                                             ? Container()
-                                            : CustomContainer(
-                                                sizeHeight: 30,
-                                                sizeWidth: 70,
-                                                color: Colors.green,
-                                                radius: 24,
-                                                child: Center(
-                                                  child: Text(
-                                                    "${discount}% Off",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
+                                            : discount >= 11 &&
+                                                    widget.active == 1
+                                                ? CustomContainer(
+                                                    sizeHeight: 45,
+                                                    sizeWidth: 60,
+
+                                                    // sizeHeight: mq.height * 0.044,
+                                                    // sizeWidth: mq.width * 0.2,
+
+                                                    radius: 24,
+                                                    child: Center(
+                                                        child: Image.asset(
+                                                            'assets/images/offerlogo.png')),
+                                                  )
+                                                : CustomContainer(
+                                                    sizeHeight: 30,
+                                                    sizeWidth: 70,
+                                                    color: Colors.green,
+                                                    radius: 24,
+                                                    child: Center(
+                                                      child: Text(
+                                                        "${discount}% Off",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
                                       ),
                                     ],
                                   ),

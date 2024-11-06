@@ -134,6 +134,7 @@ class _ProfileState extends State<Profile> {
                           children: [
                             //name
                             CustomContainer(
+                              color: Color.fromARGB(255, 231, 227, 227),
                               sizeHeight: 50,
                               // sizeHeight: mq.height * 0.09,
                               sizeWidth: double.infinity,
@@ -149,6 +150,7 @@ class _ProfileState extends State<Profile> {
 
                             //email
                             CustomContainer(
+                              color: Color.fromARGB(255, 231, 227, 227),
                               sizeHeight: 50,
                               sizeWidth: double.infinity,
                               child: Padding(
@@ -163,6 +165,7 @@ class _ProfileState extends State<Profile> {
 
                             //Phone
                             CustomContainer(
+                              color: Color.fromARGB(255, 231, 227, 227),
                               sizeHeight: 50,
                               sizeWidth: double.infinity,
                               child: Padding(

@@ -11,11 +11,13 @@ class CustomCard extends StatefulWidget {
   final String name;
   final String price;
   final String? product_mrps;
+  final dynamic active;
   VoidCallback onTap;
   Widget? child;
 
   CustomCard({
     required this.image,
+    this.active,
     required this.name,
     this.product_mrps,
     required this.price,
@@ -30,6 +32,13 @@ class CustomCard extends StatefulWidget {
 }
 
 class _CustomCardState extends State<CustomCard> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("jjdadjsajdh ${widget.discount}");
+  }
+
   @override
   Widget build(BuildContext context) {
     var mq = MediaQuery.of(context).size;
@@ -48,7 +57,7 @@ class _CustomCardState extends State<CustomCard> {
           ),
           child: Stack(
             clipBehavior: Clip.antiAlias,
-            alignment: Alignment.topRight,
+            alignment: Alignment.topLeft,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,20 +136,33 @@ class _CustomCardState extends State<CustomCard> {
               ),
               widget.discount == 0
                   ? Container()
-                  : CustomContainer(
-                      sizeHeight: 30,
-                      sizeWidth: 70,
-                      // sizeHeight: mq.height * 0.044,
-                      // sizeWidth: mq.width * 0.2,
-                      color: Colors.green,
-                      radius: 24,
-                      child: Center(
-                        child: Text(
-                          "${widget.discount}% Off",
-                          style: TextStyle(color: Colors.white),
+                  : widget.discount >= 11 && widget.active == 1
+                      ? CustomContainer(
+                          sizeHeight: 45,
+                          sizeWidth: 60,
+
+                          // sizeHeight: mq.height * 0.044,
+                          // sizeWidth: mq.width * 0.2,
+
+                          radius: 24,
+                          child: Center(
+                              child:
+                                  Image.asset('assets/images/offerlogo.png')),
+                        )
+                      : CustomContainer(
+                          sizeHeight: 30,
+                          sizeWidth: 70,
+                          // sizeHeight: mq.height * 0.044,
+                          // sizeWidth: mq.width * 0.2,
+                          color: Colors.green,
+                          radius: 24,
+                          child: Center(
+                            child: Text(
+                              "${widget.discount}% Off",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
             ],
           ),
         ),

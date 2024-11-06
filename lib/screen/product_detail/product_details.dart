@@ -11,9 +11,11 @@ import 'package:provider/provider.dart';
 
 class ProductDetails extends StatefulWidget {
   final data;
+  final active;
   static var product_mrpsss;
 
   const ProductDetails({
+    this.active,
     this.data,
     super.key,
   });
@@ -202,18 +204,31 @@ class _ProductDetailsState extends State<ProductDetails> {
                           //discout
                           discount == 0
                               ? Container()
-                              : CustomContainer(
-                                  sizeHeight: mq.height * 0.044,
-                                  sizeWidth: mq.width * 0.2,
-                                  color: Colors.green,
-                                  radius: 24,
-                                  child: Center(
-                                    child: Text(
-                                      "${discount}% Off",
-                                      style: TextStyle(color: Colors.white),
+                              : discount >= 11 && widget.active == 1
+                                  ? CustomContainer(
+                                      sizeHeight: 45,
+                                      sizeWidth: 60,
+
+                                      // sizeHeight: mq.height * 0.044,
+                                      // sizeWidth: mq.width * 0.2,
+
+                                      radius: 24,
+                                      child: Center(
+                                          child: Image.asset(
+                                              'assets/images/offerlogo.png')),
+                                    )
+                                  : CustomContainer(
+                                      sizeHeight: mq.height * 0.044,
+                                      sizeWidth: mq.width * 0.2,
+                                      color: Colors.green,
+                                      radius: 24,
+                                      child: Center(
+                                        child: Text(
+                                          "${discount}% Off",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
                         ],
                       ),
                       SizedBox(height: mq.height * 0.02),
@@ -359,7 +374,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ShoppingCart(),
+                                    builder: (context) => ShoppingCart(
+                                      active: widget.active,
+                                    ),
                                   ));
                             }
                           : () {

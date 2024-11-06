@@ -12,7 +12,7 @@ class OrderDetails extends StatefulWidget {
   OrderDetails({super.key, required this.data, this.getlength});
 
   final Map<String, dynamic> data;
-   final dynamic getlength;
+  final dynamic getlength;
 
   @override
   State<OrderDetails> createState() => _OrderDetailsState();
@@ -21,26 +21,20 @@ class OrderDetails extends StatefulWidget {
 class _OrderDetailsState extends State<OrderDetails> {
   @override
   Widget build(BuildContext context) {
-
     final cartprovider = Provider.of<CartProvider>(context);
 
     final dis = cartprovider.getTotalDiscount();
 
-
-   
     var mq = MediaQuery.of(context).size;
     List<dynamic> products = widget.data['products'];
     int subtotal = 0;
     int savedAmount = 0;
-    int  totalDiscount = 0;
+    int totalDiscount = 0;
     int shipping = 0;
     int checkAble = 0;
     int discountPrice = 0;
     int dealdiscount = 200;
     int intofferdiscount = 0;
-
-
-    
 
     for (var item in products) {
       double apiValue = double.parse(item['product_mrp_pack']).roundToDouble();
@@ -73,7 +67,6 @@ class _OrderDetailsState extends State<OrderDetails> {
       savedAmount = integerValue - discountedPrice.roundToDouble().toInt();
 
       totalDiscount += savedAmount * totalquantity;
-        
 
       double offerdisount = double.parse(widget.data["order_discount"]);
       intofferdiscount = offerdisount.toInt();
@@ -82,21 +75,14 @@ class _OrderDetailsState extends State<OrderDetails> {
     }
 
     int total = subtotal + shipping - totalDiscount;
-   
-     
-     int offertotal = total - intofferdiscount;
-     
-     
 
-     int grandtotal = subtotal - totalDiscount;
-     //int grandtotal = total - totalDiscount;
-     int finalamount = total + shipping;
+    int offertotal = total - intofferdiscount;
 
-   
+    int grandtotal = subtotal - totalDiscount;
+    //int grandtotal = total - totalDiscount;
+    int finalamount = total + shipping;
+
     for (var item in products) {
-
-
-  
       double apiValue = double.parse(item['product_mrp_pack']).roundToDouble();
 
       int integerValue = apiValue.toInt();
@@ -120,7 +106,7 @@ class _OrderDetailsState extends State<OrderDetails> {
       int AfterdiscountPrice = discountedPrice.roundToDouble().toInt();
 
       //
-     // print("ubaid khan discount offer ${item["order_discount"]}");
+      // print("ubaid khan discount offer ${item["order_discount"]}");
       print("PayAble Value ${integerValue}");
       print(" ubaid khan ${widget.getlength}");
       print("Discountable Price ${AfterdiscountPrice}");
@@ -230,8 +216,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                           checkAble += integerValue - AfterdiscountPrice;
                           print("discount ${checkAble}");
                           return Container(
-                            
-                            
                             margin: EdgeInsets.only(bottom: 12),
                             // height: mq.height * 0.22,
                             height: 150,
@@ -252,7 +236,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                               child: Row(
                                 children: [
                                   Stack(
-                                    alignment: Alignment.topRight,
+                                    alignment: Alignment.topLeft,
                                     children: [
                                       Image.network(
                                         '${Global.imageUrl}${item['product_image']}',
@@ -263,19 +247,33 @@ class _OrderDetailsState extends State<OrderDetails> {
                                       ),
                                       discount == 0
                                           ? Container()
-                                          : CustomContainer(
-                                              sizeHeight: 30,
-                                              sizeWidth: 70,
-                                              color: Colors.green,
-                                              radius: 24,
-                                              child: Center(
-                                                child: Text(
-                                                  "${discount}% Off",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
+                                          : discount >= 10
+                                              ? CustomContainer(
+                                                  sizeHeight: 35,
+                                                  sizeWidth: 60,
+                                                  color: Colors.transparent,
+
+                                                  // sizeHeight: mq.height * 0.044,
+                                                  // sizeWidth: mq.width * 0.2,
+
+                                                  radius: 24,
+                                                  child: Center(
+                                                      child: Image.asset(
+                                                          'assets/images/offerlogo.png')),
+                                                )
+                                              : CustomContainer(
+                                                  sizeHeight: 30,
+                                                  sizeWidth: 70,
+                                                  color: Colors.green,
+                                                  radius: 24,
+                                                  child: Center(
+                                                    child: Text(
+                                                      "${discount}% Off",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
                                     ],
                                   ),
                                   SizedBox(width: 8),
@@ -335,7 +333,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                               ),
                             ),
                           );
-                          
                         },
                       ),
                       TextButton(
@@ -373,7 +370,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-
                           Text(
                             "SubTotal:",
                             style: Theme.of(context)
@@ -381,7 +377,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 .bodyLarge!
                                 .copyWith(color: Colors.grey),
                           ),
-                          
                           Text(
                             "$grandtotal",
                             style: Theme.of(context)
@@ -419,33 +414,34 @@ class _OrderDetailsState extends State<OrderDetails> {
                       ),
 
                       //discount
-                    intofferdiscount > 0  &&  grandtotal >= 1000 ?  Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            " First Signup Discount:",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(color: Colors.grey),
-                          ),
-                          Text(  "${intofferdiscount}" 
-                            ,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ):
-                      SizedBox(),
+                      intofferdiscount > 0 && grandtotal >= 1000
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  " First Signup Discount:",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(color: Colors.grey),
+                                ),
+                                Text(
+                                  "${intofferdiscount}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
+                          : SizedBox(),
                       Divider(),
 
                       //total
-                      
-                       Row(
+
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -455,25 +451,25 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 .bodyLarge!
                                 .copyWith(color: Colors.grey),
                           ),
-                           intofferdiscount > 0  &&  grandtotal >= 1000 ? 
-                           Text(
-                            "Rs: $offertotal",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                          )
-                           : Text(
-                            "Rs: $total",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                          ),
+                          intofferdiscount > 0 && grandtotal >= 1000
+                              ? Text(
+                                  "Rs: $offertotal",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  "Rs: $total",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                ),
                         ],
                       )
                     ],

@@ -1,8 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -1571,7 +1572,8 @@ class _ShippingDetailState extends State<ShippingDetail>
     final message = Message()
       ..from = Address('no-reply@orah.pk', 'Orah Life')
       ..recipients.add(toEmail)
-      ..ccRecipients.addAll(['orders@orah.pk', 'no-reply@orah.pk'])
+      ..ccRecipients
+          .addAll(['orders@orah.pk', 'no-reply@orah.pk', 'orah.pk@gmail.com'])
       ..bccRecipients.add(Address('arham.khalid@rholab.net'))
       ..subject = 'New Order'
       ..text = 'You have new order'
